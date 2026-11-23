@@ -2,6 +2,9 @@
 package megjelenites;
 
 import kivetel.MarLetezoLoKivetel;
+import letrehozo.BerloLetrehozo;
+import letrehozo.IskolaloLetrehozo;
+import letrehozo.LoLetrehozo;
 import modell.Berlo;
 import modell.Iskolalo;
 import modell.Lo;
@@ -16,14 +19,13 @@ import java.util.Scanner;
 public class KonzolMenu {
 
     private final Scanner scanner;
-    private LoTarolo tarolo;
+    private final LoTarolo tarolo;
     private final AdatKezelo adatKezelo;
 
     public KonzolMenu() {
         scanner = new Scanner(System.in);
         tarolo = new LoTarolo();
         adatKezelo = new AdatKezelo();
-
         betoltes();
     }
 
@@ -81,28 +83,32 @@ public class KonzolMenu {
         int tipus = bekerSzam("Választás: ");
 
         try {
-            Lo lo;
+            LoLetrehozo letrehozo;
+            double kulonlegesAdat;
 
             if (tipus == 1) {
-                int napiOraLimit = bekerSzam("Napi óraszámkorlát: ");
-
-                lo = new Iskolalo(
-                        azonosito, nev, eletkor,
-                        fajta, marmagassag, napiOraLimit
+                letrehozo = new IskolaloLetrehozo();
+                kulonlegesAdat = bekerSzam(
+                        "Napi óraszámkorlát: "
                 );
 
             } else if (tipus == 2) {
-                int oradij = bekerSzam("Óradíj: ");
-
-                lo = new Berlo(
-                        azonosito, nev, eletkor,
-                        fajta, marmagassag, oradij
-                );
+                letrehozo = new BerloLetrehozo();
+                kulonlegesAdat = bekerTizedes("Óradíj: ");
 
             } else {
                 System.out.println("Érvénytelen típus!");
                 return;
             }
+
+            Lo lo = letrehozo.letrehoz(
+                    azonosito,
+                    nev,
+                    eletkor,
+                    fajta,
+                    marmagassag,
+                    kulonlegesAdat
+            );
 
             tarolo.hozzaad(lo);
             System.out.println("A ló sikeresen felvéve!");
@@ -155,7 +161,9 @@ public class KonzolMenu {
     }
 
     private void loModositasa() {
-        int azonosito = bekerSzam("A módosítandó ló azonosítója: ");
+        int azonosito = bekerSzam(
+                "A módosítandó ló azonosítója: "
+        );
 
         Lo lo = tarolo.keres(azonosito);
 
@@ -173,7 +181,19 @@ public class KonzolMenu {
             lo.setNev(bekerSzoveg("Új név: "));
             lo.setEletkor(bekerSzam("Új életkor: "));
             lo.setFajta(bekerSzoveg("Új fajta: "));
-            lo.setMarmagassag(bekerTizedes("Új marmagasság (cm): "));
+            lo.setMarmagassag(
+                    bekerTizedes("Új marmagasság (cm): ")
+            );
+
+            if (lo instanceof Iskolalo iskolalo) {
+                iskolalo.setNapiOraLimit(
+                        bekerSzam("Új napi óraszámkorlát: ")
+                );
+            } else if (lo instanceof Berlo berlo) {
+                berlo.setOradij(
+                        bekerTizedes("Új óradíj: ")
+                );
+            }
 
             System.out.println("A ló adatai sikeresen módosultak!");
 
@@ -183,7 +203,9 @@ public class KonzolMenu {
     }
 
     private void loTorlese() {
-        int azonosito = bekerSzam("A törlendő ló azonosítója: ");
+        int azonosito = bekerSzam(
+                "A törlendő ló azonosítója: "
+        );
 
         if (tarolo.torol(azonosito)) {
             System.out.println("A ló sikeresen törölve.");
@@ -281,8 +303,12 @@ public class KonzolMenu {
 
             System.out.println("Az adatok betöltése sikeres.");
 
-        } catch (IOException | ClassNotFoundException | MarLetezoLoKivetel e) {
-            System.out.println("Az adatok betöltése nem sikerült: " + e.getMessage());
+        } catch (IOException | ClassNotFoundException
+                 | MarLetezoLoKivetel e) {
+            System.out.println(
+                    "Az adatok betöltése nem sikerült: "
+                            + e.getMessage()
+            );
         }
     }
 
@@ -307,9 +333,14 @@ public class KonzolMenu {
             System.out.print(uzenet);
 
             try {
-                return Integer.parseInt(scanner.nextLine().trim());
+                return Integer.parseInt(
+                        scanner.nextLine().trim()
+                );
+
             } catch (NumberFormatException e) {
-                System.out.println("Kérlek, egész számot adj meg!");
+                System.out.println(
+                        "Kérlek, egész számot adj meg!"
+                );
             }
         }
     }
@@ -322,8 +353,11 @@ public class KonzolMenu {
                 return Double.parseDouble(
                         scanner.nextLine().trim().replace(',', '.')
                 );
+
             } catch (NumberFormatException e) {
-                System.out.println("Kérlek, érvényes számot adj meg!");
+                System.out.println(
+                        "Kérlek, érvényes számot adj meg!"
+                );
             }
         }
     }

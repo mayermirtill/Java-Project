@@ -33,7 +33,7 @@ public class Berlo extends Lo {
 
     @Override
     public String toString() {
-        return "Bérlőló: " + getNev()
+        return "Bérló: " + getNev()
                 + ", azonosító: " + getAzonosito()
                 + ", életkor: " + getEletkor()
                 + ", fajta: " + getFajta()
