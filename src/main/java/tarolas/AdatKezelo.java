@@ -1,3 +1,4 @@
+
 package tarolas;
 
 import modell.Lo;
@@ -10,12 +11,23 @@ public class AdatKezelo {
 
     private static final String FAJLNEV = "adatok/lovak.dat";
 
+    private final String fajlnev;
+
+    public AdatKezelo() {
+        this.fajlnev = FAJLNEV;
+    }
+
+    // Külön fájlútvonal megadása teszteléshez
+    AdatKezelo(String fajlnev) {
+        this.fajlnev = fajlnev;
+    }
+
     // Lovak mentése fájlba
     public void ment(List<Lo> lovak) throws IOException {
-        File fajl = new File(FAJLNEV);
+        File fajl = new File(fajlnev);
         File mappa = fajl.getParentFile();
 
-        if (!mappa.exists()) {
+        if (mappa != null && !mappa.exists()) {
             mappa.mkdirs();
         }
 
@@ -28,7 +40,7 @@ public class AdatKezelo {
     // Lovak betöltése fájlból
     @SuppressWarnings("unchecked")
     public List<Lo> betolt() throws IOException, ClassNotFoundException {
-        File fajl = new File(FAJLNEV);
+        File fajl = new File(fajlnev);
 
         if (!fajl.exists()) {
             return new ArrayList<>();
