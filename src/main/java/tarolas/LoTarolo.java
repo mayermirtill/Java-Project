@@ -41,6 +41,41 @@ public class LoTarolo {
         return null;
     }
 
+    // Ló keresése név alapján
+    public List<Lo> keresNevAlapjan(String nev) {
+        List<Lo> talalatok = new ArrayList<>();
+
+        if (nev == null || nev.isBlank()) {
+            return talalatok;
+        }
+
+        for (Lo lo : lovak) {
+            if (lo.getNev().equalsIgnoreCase(nev.trim())) {
+                talalatok.add(lo);
+            }
+        }
+
+        return talalatok;
+    }
+
+    // Ló adatainak módosítása
+    public boolean modosit(Lo modositottLo) {
+        if (modositottLo == null) {
+            throw new IllegalArgumentException("A ló nem lehet null!");
+        }
+
+        for (int i = 0; i < lovak.size(); i++) {
+            Lo regiLo = lovak.get(i);
+
+            if (regiLo.getAzonosito() == modositottLo.getAzonosito()) {
+                lovak.set(i, modositottLo);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     // Ló törlése azonosító alapján
     public boolean torol(int azonosito) {
         Lo lo = keres(azonosito);
