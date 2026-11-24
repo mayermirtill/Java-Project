@@ -1,0 +1,199 @@
+
+@startuml
+
+title Lovarda Nyilvántartó Rendszer - UML osztálydiagram
+
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+' =========================
+' MODELL CSOMAG
+' =========================
+
+package modell {
+
+    abstract class Lo {
+        - serialVersionUID : long {static, final}
+        - azonosito : int
+        - nev : String
+        - eletkor : int
+        - fajta : String
+        - marmagassag : double
+        - allapot : LoAllapot
+
+        + Lo(azonosito : int, nev : String, eletkor : int, fajta : String, marmagassag : double)
+        + getAzonosito() : int
+        + getNev() : String
+        + setNev(nev : String) : void
+        + getEletkor() : int
+        + setEletkor(eletkor : int) : void
+        + getFajta() : String
+        + setFajta(fajta : String) : void
+        + getMarmagassag() : double
+        + setMarmagassag(marmagassag : double) : void
+        + getAllapot() : LoAllapot
+        + setAllapot(allapot : LoAllapot) : void
+    }
+
+    class Iskolalo {
+        - napiOraLimit : int
+
+        + Iskolalo(azonosito : int, nev : String, eletkor : int, fajta : String, marmagassag : double, napiOraLimit : int)
+        + getNapiOraLimit() : int
+        + setNapiOraLimit(napiOraLimit : int) : void
+        + toString() : String
+    }
+
+    class Berlo {
+        - oradij : double
+
+        + Berlo(azonosito : int, nev : String, eletkor : int, fajta : String, marmagassag : double, oradij : double)
+        + getOradij() : double
+        + setOradij(oradij : double) : void
+        + toString() : String
+    }
+
+    enum LoAllapot {
+        AKTIV
+        PIHENO
+        BETEG
+    }
+
+    Lo <|-- Iskolalo
+    Lo <|-- Berlo
+    Lo --> LoAllapot
+}
+
+' =========================
+' LETREHOZO CSOMAG
+' =========================
+
+package letrehozo {
+
+    abstract class LoLetrehozo {
+        {abstract} + letrehoz(azonosito : int, nev : String, eletkor : int, fajta : String, marmagassag : double, kulonlegesAdat : double) : Lo
+    }
+
+    class IskolaloLetrehozo {
+        + letrehoz(azonosito : int, nev : String, eletkor : int, fajta : String, marmagassag : double, kulonlegesAdat : double) : Lo
+    }
+
+    class BerloLetrehozo {
+        + letrehoz(azonosito : int, nev : String, eletkor : int, fajta : String, marmagassag : double, kulonlegesAdat : double) : Lo
+    }
+
+    LoLetrehozo <|-- IskolaloLetrehozo
+    LoLetrehozo <|-- BerloLetrehozo
+}
+
+' =========================
+' TAROLAS CSOMAG
+' =========================
+
+package tarolas {
+
+    class LoTarolo {
+        - lovak : List<Lo> {final}
+
+        + LoTarolo()
+        + hozzaad(lo : Lo) : void
+        + keres(azonosito : int) : Lo
+        + keresNevAlapjan(nev : String) : List<Lo>
+        + modosit(modositottLo : Lo) : boolean
+        + torol(azonosito : int) : boolean
+        + getLovak() : List<Lo>
+        + rendezNevSzerint() : void
+        + rendezEletkorSzerint() : void
+        + getLovakSzama() : int
+    }
+
+    class AdatKezelo {
+        - {static} {final} FAJLNEV : String
+        - fajlnev : String {final}
+
+        + AdatKezelo()
+        ~ AdatKezelo(fajlnev : String)
+        + ment(lovak : List<Lo>) : void
+        + betolt() : List<Lo>
+    }
+
+    LoTarolo "1" o-- "0..*" Lo : nyilvántart
+    AdatKezelo ..> Lo : mentés és betöltés
+}
+
+' =========================
+' KIVETEL CSOMAG
+' =========================
+
+package kivetel {
+
+    class MarLetezoLoKivetel {
+        + MarLetezoLoKivetel(uzenet : String)
+    }
+}
+
+LoTarolo ..> MarLetezoLoKivetel : dobhat
+
+' =========================
+' MEGJELENITES CSOMAG
+' =========================
+
+package megjelenites {
+
+    class Main {
+        + {static} main(args : String[]) : void
+    }
+
+    class KonzolMenu {
+        - scanner : Scanner
+        - tarolo : LoTarolo {final}
+        - adatKezelo : AdatKezelo
+
+        + KonzolMenu()
+        + indit() : void
+        - ujLoFelvetele() : void
+        - lovakListazasa() : void
+        - loKereseseAzonositoAlapjan() : void
+        - loKereseseNevAlapjan() : void
+        - loModositasa() : void
+        - loTorlese() : void
+        - nevSzerintiRendezes() : void
+        - eletkorSzerintiRendezes() : void
+        - allapotModositasa() : void
+        - statisztikak() : void
+        - betoltes() : void
+        - mentes() : void
+        - kilepes() : void
+        - bekerSzam(uzenet : String) : int
+        - bekerTizedes(uzenet : String) : double
+        - bekerSzoveg(uzenet : String) : String
+    }
+
+    Main ..> KonzolMenu : elindítja
+    KonzolMenu --> LoTarolo : használja
+    KonzolMenu --> AdatKezelo : használja
+    KonzolMenu ..> LoLetrehozo : létrehozó kiválasztása
+    KonzolMenu ..> Lo : kezel
+}
+
+' =========================
+' KÜLSŐ JAVA OSZTÁLYOK
+' =========================
+
+interface Serializable <<Java interface>>
+interface List <<Java interface>>
+class Scanner <<Java class>>
+class IOException <<Java class>>
+class ClassNotFoundException <<Java class>>
+
+Lo ..|> Serializable
+
+KonzolMenu --> Scanner
+LoTarolo ..> List
+AdatKezelo ..> List
+
+AdatKezelo ..> IOException : dobhat
+AdatKezelo ..> ClassNotFoundException : dobhat
+
+@enduml
