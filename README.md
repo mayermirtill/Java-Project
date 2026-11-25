@@ -152,7 +152,3 @@ java -cp target/classes megjelenites.Main
 ## 11. Készítő
 
 **Mayer Mirtill Panna**
-
-Egyéni egyetemi projekt – Programozás 2.
-
-Pécsi Tudományegyetem – Mérnökinformatikus BSc.
